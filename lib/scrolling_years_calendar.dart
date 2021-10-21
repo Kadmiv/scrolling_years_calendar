@@ -6,11 +6,11 @@ import 'package:scrolling_years_calendar/year_view.dart';
 
 class ScrollingYearsCalendar extends StatefulWidget {
   ScrollingYearsCalendar({
-    @required this.context,
-    @required this.initialDate,
-    @required this.firstDate,
-    @required this.lastDate,
-    @required this.currentDateColor,
+    required this.context,
+    required this.initialDate,
+    required this.firstDate,
+    required this.lastDate,
+    required this.currentDateColor,
     this.highlightedDates,
     this.highlightedDateColor,
     this.monthNames,
@@ -38,11 +38,11 @@ class ScrollingYearsCalendar extends StatefulWidget {
   final DateTime firstDate;
   final DateTime lastDate;
   final Color currentDateColor;
-  final List<DateTime> highlightedDates;
-  final Color highlightedDateColor;
-  final List<String> monthNames;
-  final Function onMonthTap;
-  final TextStyle monthTitleStyle;
+  final List<DateTime>? highlightedDates;
+  final Color? highlightedDateColor;
+  final List<String>? monthNames;
+  final Function? onMonthTap;
+  final TextStyle? monthTitleStyle;
 
   @override
   _ScrollingYearsCalendarState createState() => _ScrollingYearsCalendarState();
