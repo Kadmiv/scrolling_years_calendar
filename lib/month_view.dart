@@ -104,9 +104,8 @@ class MonthView extends StatelessWidget {
         ? Container(
             child: buildMonthView(context),
           )
-        : FlatButton(
+        : ElevatedButton(
             onPressed: () => onTap!(year, month),
-            padding: const EdgeInsets.all(0.0),
             child: buildMonthView(context),
           );
   }
