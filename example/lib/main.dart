@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:scrolling_years_calendar/scrolling_years_calendar.dart';
+import 'package:scrolling_years_calendar/paged_vertical_years_calendar.dart';
 
 void main() => runApp(MyApp());
 
@@ -23,43 +23,77 @@ class HomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final size = MediaQuery.of(context).size;
+    print(size.toString());
+
+    final initialDate = DateTime.now();
     return Scaffold(
       appBar: AppBar(
         title: const Text('Flutter Scrolling Calendar'),
       ),
-      body: Center(
-        child: ScrollingYearsCalendar(
-          // Required parameters
-          context: context,
-          initialDate: DateTime.now(),
-          firstDate: DateTime.now().subtract(const Duration(days: 5 * 365)),
-          lastDate: DateTime.now(),
-          currentDateColor: Colors.blue,
+      // body: ScrollingYearsCalendar(
+      //   // Required parameters
+      //   context: context,
+      //   monthsPerRow: 3,
+      //   initialDate: initialDate,
+      //   showDayTitle: true,
+      //   upperLimitDate:
+      //       DateTime.now().subtract(const Duration(days: 5 * 365)),
+      //   lowerLimitDate: DateTime.now().add(const Duration(days: 2 * 365)),
+      //   dayBuilder: (context, date) {
+      //     final now = initialDate;
+      //
+      //     if (now.day == date.day &&
+      //         now.month == date.month &&
+      //         now.year == date.year) {
+      //       return BoxDecoration(
+      //         color: Colors.orange,
+      //         borderRadius: BorderRadius.circular(30),
+      //       );
+      //     }
+      //
+      //     return null;
+      //   },
+      //   onMonthTap: (date) => print('Tapped ${date.toString()}'),
+      //   monthTitleStyle: TextStyle(
+      //     fontSize: 16,
+      //     fontWeight: FontWeight.bold,
+      //     color: Colors.blue,
+      //   ),
+      // ),
+      body: PagedVerticalYearsCalendar(
+        initialDate: initialDate,
+        minDate: DateTime.now().subtract(const Duration(days: 5 * 365)),
+        maxDate: DateTime.now().add(const Duration(days: 2 * 365)),
+        showDayTitle: true,
+        monthsPerRow: 3,
+        // to prevent the data from being reset every time a user loads or
+        // unloads this widget
+        addAutomaticKeepAlives: true,
+        dayBuilder: (BuildContext context, DateTime date) {
+          return SizedBox();
+        },
 
-          // Optional parameters
-          highlightedDates: getHighlightedDates(),
-          highlightedDateColor: Colors.deepOrange,
-          monthNames: const <String>[
-            'Jan',
-            'Feb',
-            'Mar',
-            'Apr',
-            'May',
-            'Jun',
-            'Jul',
-            'Aug',
-            'Sep',
-            'Oct',
-            'Nov',
-            'Dec',
-          ],
-          onMonthTap: (int year, int month) => print('Tapped $month/$year'),
-          monthTitleStyle: TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.bold,
-            color: Colors.blue,
-          ),
-        ),
+        // dayBuilder: (context, date) {
+        //   final now = initialDate;
+        //
+        //   if (now.day == date.day &&
+        //       now.month == date.month &&
+        //       now.year == date.year) {
+        //     return BoxDecoration(
+        //       color: Colors.orange,
+        //       borderRadius: BorderRadius.circular(30),
+        //     );
+        //   }
+        //
+        //   return null;
+        // },
+        // onMonthTap: (date) => print('Tapped ${date.toString()}'),
+        // monthTitleStyle: TextStyle(
+        //   fontSize: 16,
+        //   fontWeight: FontWeight.bold,
+        //   color: Colors.blue,
+        // ),
       ),
     );
   }

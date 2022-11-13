@@ -1,6 +1,6 @@
 /// Checks if the given date is equal to the current date.
 bool isCurrentDate(DateTime date) {
-  final DateTime now = DateTime.now();
+  final now = DateTime.now();
   return date.isAtSameMomentAs(DateTime(now.year, now.month, now.day));
 }
 
@@ -13,29 +13,8 @@ bool isHighlightedDate(DateTime date, List<DateTime> highlightedDates) {
 
 /// Gets the number of days for the given month,
 /// by taking the next month on day 0 and getting the number of days.
-int getDaysInMonth(int year, int month) {
-  return month < DateTime.monthsPerYear
-      ? DateTime(year, month + 1, 0).day
-      : DateTime(year + 1, 1, 0).day;
-}
-
-/// Gets the name of the given month by its number,
-/// using either the supplied or default name.
-String getMonthName(int month, {List<String>? monthNames}) {
-  final List<String> names = monthNames ??
-      <String>[
-        'Jan',
-        'Feb',
-        'Mar',
-        'Apr',
-        'May',
-        'Jun',
-        'Jul',
-        'Aug',
-        'Sep',
-        'Oct',
-        'Nov',
-        'Dec',
-      ];
-  return names[month - 1];
+int getDaysInMonth(DateTime date) {
+  return date.month < DateTime.monthsPerYear
+      ? DateTime(date.year, date.month + 1, 0).day
+      : DateTime(date.year + 1, 1, 0).day;
 }
