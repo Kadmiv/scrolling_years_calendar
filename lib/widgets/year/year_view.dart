@@ -28,7 +28,6 @@ class YearView extends AbstractYearWidget {
 
   @override
   Widget build(BuildContext context) {
-
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
       child: Column(
@@ -38,7 +37,7 @@ class YearView extends AbstractYearWidget {
             aspectRatio: 10,
             child: Align(
               alignment: Alignment.centerLeft,
-              child: YearTitle(date),
+              child: YearTitle(date, monthsPerRow: super.monthsPerRow),
             ),
           ),
           buildYearMonths(context),
@@ -65,6 +64,7 @@ class YearView extends AbstractYearWidget {
           monthTitles: super.monthTitles,
           uniqueDates: super.uniqueDates,
           weekDayFormatter: super.weekDayFormatter,
+          monthsPerRow: super.monthsPerRow,
           onMonthTap: onMonthTap,
           titleStyle: monthTitleStyle,
           showDayTitle: showDayTitle,

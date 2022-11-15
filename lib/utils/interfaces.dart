@@ -6,26 +6,29 @@ abstract class AbstractDayWidget extends StatelessWidget {
   const AbstractDayWidget({
     required this.dayBuilder,
     required this.dayTitleDecoration,
-    required this.weekDayFormatter,
+
+    required this.monthsPerRow,
     super.key,
   });
 
   final DayWidgetBuilder dayBuilder;
   final DecorationBuilder dayTitleDecoration;
-  final DateFormat weekDayFormatter;
+  final int monthsPerRow;
+
 }
 
 abstract class AbstractMonthWidget extends AbstractDayWidget {
   const AbstractMonthWidget({
     required this.monthDecoration,
     required this.monthTitles,
+    required this.weekDayFormatter,
     required this.daysWidgets,
     required this.showDayTitle,
     required this.startWeekWithSunday,
     required this.uniqueDates,
     required super.dayBuilder,
-    required super.weekDayFormatter,
     required super.dayTitleDecoration,
+    required super.monthsPerRow,
     super.key,
   });
 
@@ -35,11 +38,11 @@ abstract class AbstractMonthWidget extends AbstractDayWidget {
   final Map<String, DateTime> uniqueDates;
   final bool showDayTitle;
   final bool startWeekWithSunday;
+  final DateFormat weekDayFormatter;
 }
 
 abstract class AbstractYearWidget extends AbstractMonthWidget {
   const AbstractYearWidget({
-    required this.monthsPerRow,
     required this.yearDecoration,
     required super.dayBuilder,
     required super.daysWidgets,
@@ -50,9 +53,9 @@ abstract class AbstractYearWidget extends AbstractMonthWidget {
     required super.monthTitles,
     required super.weekDayFormatter,
     required super.dayTitleDecoration,
+    required super.monthsPerRow,
     super.key,
   });
 
-  final int monthsPerRow;
   final DecorationBuilder yearDecoration;
 }

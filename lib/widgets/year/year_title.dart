@@ -1,23 +1,23 @@
-import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
+import 'package:scrolling_years_calendar/utils/device_type_helper.dart';
+import 'package:scrolling_years_calendar/utils/utils.dart';
 
 class YearTitle extends StatelessWidget {
-  const YearTitle(this.date, {super.key});
+  const YearTitle(this.date,  {required this.monthsPerRow,super.key});
 
   final DateTime date;
+  final int monthsPerRow;
 
   @override
   Widget build(BuildContext context) {
+    final fontSize = calculateFontSize(12, monthsPerRow);
+
     return Container(
-      child: AutoSizeText(
+      child: Text(
         date.year.toString(),
-        style: TextStyle(fontSize: 60),
-        // textAlign: TextAlign.center,
-        minFontSize: 10,
-        stepGranularity: 2,
-        maxLines: 1,
-        group: AutoSizeGroup(),
+        style: TextStyle(fontSize: fontSize),
       ),
     );
   }
 }
+

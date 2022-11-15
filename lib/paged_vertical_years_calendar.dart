@@ -4,8 +4,9 @@ import 'package:infinite_listview/infinite_listview.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 import 'package:intl/intl.dart';
 import 'package:scrolling_years_calendar/utils/constants.dart';
+import 'package:scrolling_years_calendar/utils/device_type_helper.dart';
 import 'package:scrolling_years_calendar/utils/extentions.dart';
-import 'package:scrolling_years_calendar/widgets/day/day_number.dart';
+import 'package:scrolling_years_calendar/widgets/day/day_view.dart';
 import 'package:scrolling_years_calendar/widgets/year/year_view.dart';
 
 /// enum indicating the pagination enpoint direction
@@ -148,7 +149,7 @@ class _PagedVerticalYearsCalendarState
   late bool hideUp;
 
   late final List<String> _monthTitles;
-  late final List<Widget> _daysWidgets;
+  late List<Widget> _daysWidgets;
   late final Map<String, DateTime> _uniqueDates;
 
   @override
@@ -159,13 +160,6 @@ class _PagedVerticalYearsCalendarState
       12,
       (index) => widget.monthFormatter.format(
         DateTime(2000, index + 1),
-      ),
-    );
-
-    _daysWidgets = List.generate(
-      31,
-      (day) => DayNumber(
-        day: (day + 1).toString(),
       ),
     );
 
@@ -293,6 +287,18 @@ class _PagedVerticalYearsCalendarState
 
   @override
   Widget build(BuildContext context) {
+    final width = MediaQuery.of(context).size.width;
+    DeviceTypeHelper.instance.checkDeviceScreen();
+    print('width:$width');
+
+    _daysWidgets = List.generate(
+      31,
+      (day) => DayView(
+        day: (day + 1).toString(),
+        monthsPerRow: widget.monthsPerRow,
+      ),
+    );
+
     return InfiniteListView.builder(
       // key: PageStorageKey(tab),
       // controller: _infiniteController,
@@ -306,9 +312,9 @@ class _PagedVerticalYearsCalendarState
         final yearWidget = YearView(
           date: date,
           monthsPerRow: widget.monthsPerRow,
-          onMonthTap: widget.onMonthTap,
           monthTitleStyle: widget.monthTitleStyle,
           monthTitles: _monthTitles,
+          onMonthTap: widget.onMonthTap,
           dayBuilder: widget.dayBuilder,
           daysWidgets: _daysWidgets,
           showDayTitle: widget.showDayTitle,
@@ -326,6 +332,7 @@ class _PagedVerticalYearsCalendarState
       },
       // anchor: 0.5,
     );
+
     // return Scrollable(
     //   controller: widget.scrollController,
     //   physics: widget.physics,
@@ -359,13 +366,34 @@ class _PagedVerticalYearsCalendarState
     //     );
     //   },
     // );
+
+    // final years = <Widget>[];
+    // for (var index = 0; index < 100; index++) {
+    //   final date = DateTime(widget.initialDate.year + index);
     //
-    // return ListView.builder(
-    //     itemCount: 10,
-    //     itemBuilder: (context, index) {
-    //       final date = DateTime(widget.initialDate.year + index);
-    //       return buildYear(date);
-    //     });
+    //   years.add(
+    //     YearView(
+    //       date: date,
+    //       monthsPerRow: widget.monthsPerRow,
+    //       onMonthTap: widget.onMonthTap,
+    //       monthTitleStyle: widget.monthTitleStyle,
+    //       monthTitles: _monthTitles,
+    //       dayBuilder: widget.dayBuilder,
+    //       daysWidgets: _daysWidgets,
+    //       showDayTitle: widget.showDayTitle,
+    //       startWeekWithSunday: widget.startWeekWithSunday,
+    //       monthDecoration: widget.monthDecoration,
+    //       dayTitleDecoration: widget.dayTitleDecoration,
+    //       weekDayFormatter: widget.weekDayFormatter,
+    //       yearDecoration: widget.yearDecoration,
+    //       uniqueDates: _uniqueDates,
+    //     ),
+    //   );
+    // }
+    //
+    // return ListView(
+    //   children: years,
+    // );
   }
 
   @override
