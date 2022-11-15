@@ -5,8 +5,8 @@ import 'package:scrolling_years_calendar/widgets/day/day_title.dart';
 import 'package:scrolling_years_calendar/widgets/day/day_view.dart';
 import 'package:scrolling_years_calendar/widgets/month/month_title.dart';
 
-const kCellsCountWithoutWeekTitles = 35;
-const kCellsCountWithWeekTitles = 42;
+const kCellsCountWithoutWeekTitles = 7 * 6;
+const kCellsCountWithWeekTitles = 7 * 7;
 
 class MonthView extends AbstractMonthWidget {
   const MonthView({
@@ -14,9 +14,8 @@ class MonthView extends AbstractMonthWidget {
     required super.monthDecoration,
     required super.monthTitles,
     required super.uniqueDates,
-    required super.weekDayFormatter,
+    required super.dayTitles,
     required super.dayBuilder,
-    required super.daysWidgets,
     required super.dayTitleDecoration,
     required super.showDayTitle,
     required super.startWeekWithSunday,
@@ -39,10 +38,13 @@ class MonthView extends AbstractMonthWidget {
       child: Column(
         children: <Widget>[
           AspectRatio(
-            aspectRatio: 7,
-            child: MonthTitle(
-              month: super.monthTitles[date.month-1],
-              style: titleStyle,
+            aspectRatio: 6,
+            child: Align(
+              alignment: Alignment.centerLeft,
+              child: MonthTitle(
+                month: super.monthTitles[date.month - 1],
+                style: titleStyle,
+              ),
             ),
           ),
           Container(
@@ -61,9 +63,20 @@ class MonthView extends AbstractMonthWidget {
 
   Widget buildMonthDays(BuildContext context) {
     final daysInMonth = getDaysInMonth(date);
-    var firstWeekdayOfMonth = DateTime(date.year, date.month).weekday;
-    if (firstWeekdayOfMonth == 7) {
-      firstWeekdayOfMonth = 0;
+    var firstWeekdayOfMonth = DateUtils.firstDayOffset(
+      date.year,
+      date.month,
+      MaterialLocalizations.of(context),
+    );
+
+    if (super.startWeekWithSunday) {
+      if (firstWeekdayOfMonth == 7) {
+        firstWeekdayOfMonth = 0;
+      }
+    } else {
+      if (firstWeekdayOfMonth == 0) {
+        firstWeekdayOfMonth = 7;
+      }
     }
 
     final cellsCount =
@@ -79,16 +92,28 @@ class MonthView extends AbstractMonthWidget {
       itemBuilder: (BuildContext ctx, int index) {
         final difference = showDayTitle ? 7 : 0;
 
-        final day = 1 + index - firstWeekdayOfMonth - difference;
+        final day = index -
+            firstWeekdayOfMonth -
+            difference +
+            (super.startWeekWithSunday ? 1 : 2);
+
         final dayDate = DateTime(
           date.year,
           date.month,
           day,
         );
 
+        if (dayDate.year == 2022 && dayDate.month == 5 && dayDate.day == 1) {
+          print('');
+        }
+
+        if (dayDate.year == 2022 && dayDate.month == 8 && dayDate.day == 1) {
+          print('');
+        }
+
         if (showDayTitle && index < 7) {
           return DayTitle(
-            day: weekDayFormatter.format(dayDate),
+            day: super.dayTitles[index],
             decoration: dayTitleDecoration(context, dayDate),
           );
         }
@@ -96,11 +121,12 @@ class MonthView extends AbstractMonthWidget {
         Widget dayWidget = const SizedBox();
 
         if (day > 0 && day <= daysInMonth) {
-          if(uniqueDates.containsKey(dayDate.toString())){
+          if (uniqueDates.containsKey(dayDate.toString())) {
             dayWidget = dayBuilder(context, dayDate);
-          }
-          else{
-            dayWidget = super.daysWidgets[day-1];
+          } else {
+            dayWidget = DayView(
+              date: dayDate,
+            );
           }
         }
 

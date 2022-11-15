@@ -150,7 +150,7 @@ class _PagedVerticalYearsCalendarState
   late bool hideUp;
 
   late final List<String> _monthTitles;
-  late final List<Widget> _daysWidgets;
+  late final List<String> _dayTitles;
   late final Map<String, DateTime> _uniqueDates;
 
   @override
@@ -164,12 +164,15 @@ class _PagedVerticalYearsCalendarState
       ),
     );
 
-    _daysWidgets = List.generate(
-      31,
-      (day) => DayView(
-        day: (day + 1).toString(),
-      ),
-    );
+    _dayTitles = List.generate(7, (index) {
+      if (!widget.startWeekWithSunday) {
+        index = index + 1;
+      }
+
+      return widget.weekDayFormatter.format(
+        DateTime(2022, 8, index),
+      );
+    });
 
     _uniqueDates = Map.fromIterable(
       widget.uniqueDates,
@@ -293,7 +296,7 @@ class _PagedVerticalYearsCalendarState
 
   @override
   Widget build(BuildContext context) {
-    final yearDate = widget.initialDate;
+    final yearDate = DateTime(widget.initialDate.year);
 
     return InfiniteListView.builder(
       // key: PageStorageKey(tab),
@@ -309,13 +312,12 @@ class _PagedVerticalYearsCalendarState
               date: monthDate,
               monthTitles: _monthTitles,
               uniqueDates: _uniqueDates,
-              weekDayFormatter: widget.weekDayFormatter,
+              dayTitles: _dayTitles,
               onMonthTap: widget.onMonthTap,
               titleStyle: widget.monthTitleStyle,
               showDayTitle: widget.showDayTitle,
               startWeekWithSunday: widget.startWeekWithSunday,
               dayBuilder: widget.dayBuilder,
-              daysWidgets: _daysWidgets,
               dayTitleDecoration: widget.dayTitleDecoration,
               monthDecoration: widget.monthDecoration,
             ),

@@ -66,6 +66,7 @@ class HomePage extends StatelessWidget {
         minDate: DateTime.now().subtract(const Duration(days: 5 * 365)),
         maxDate: DateTime.now().add(const Duration(days: 2 * 365)),
         showDayTitle: true,
+        startWeekWithSunday: true,
         monthsPerRow: 3,
         // to prevent the data from being reset every time a user loads or
         // unloads this widget

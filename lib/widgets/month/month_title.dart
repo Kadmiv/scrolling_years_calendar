@@ -16,11 +16,13 @@ class MonthTitle extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final style = TextStyle(fontSize: 20).copyWith(fontSize: 40);
+
     return Container(
       child: AutoSizeText(
         month,
         maxLines: 1,
-        style: TextStyle(fontSize: 40),
+        style: style,
         minFontSize: 8,
         stepGranularity: 2,
         group: AutoSizeGroup(),

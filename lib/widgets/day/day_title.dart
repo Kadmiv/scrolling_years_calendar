@@ -13,16 +13,18 @@ class DayTitle extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final style = TextStyle(fontSize: 20).copyWith(fontSize: 20);
+
     return LayoutBuilder(builder: (context, constraints) {
       return Container(
-        alignment: Alignment.bottomCenter,
+        alignment: Alignment.center,
         decoration: decoration,
         padding: EdgeInsets.all(1),
         child: SizedBox(
           height: constraints.maxHeight / 2,
           child: AutoSizeText(
             day,
-            style: TextStyle(fontSize: 20),
+            style: style,
             textAlign: TextAlign.center,
             minFontSize: 4,
             maxLines: 1,
