@@ -1,8 +1,8 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 
-class DayNumber extends StatelessWidget {
-  const DayNumber({
+class DayView extends StatelessWidget {
+  const DayView({
     required this.day,
     this.decoration,
     super.key,

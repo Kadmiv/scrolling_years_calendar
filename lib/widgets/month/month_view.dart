@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:scrolling_years_calendar/utils/dates.dart';
 import 'package:scrolling_years_calendar/utils/interfaces.dart';
-import 'package:scrolling_years_calendar/widgets/day/day_number.dart';
+import 'package:scrolling_years_calendar/widgets/day/day_title.dart';
+import 'package:scrolling_years_calendar/widgets/day/day_view.dart';
 import 'package:scrolling_years_calendar/widgets/month/month_title.dart';
 
 const kCellsCountWithoutWeekTitles = 35;
@@ -86,7 +87,7 @@ class MonthView extends AbstractMonthWidget {
         );
 
         if (showDayTitle && index < 7) {
-          return DayNumber(
+          return DayTitle(
             day: weekDayFormatter.format(dayDate),
             decoration: dayTitleDecoration(context, dayDate),
           );

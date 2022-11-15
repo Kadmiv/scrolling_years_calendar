@@ -5,7 +5,9 @@ import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 import 'package:intl/intl.dart';
 import 'package:scrolling_years_calendar/utils/constants.dart';
 import 'package:scrolling_years_calendar/utils/extentions.dart';
-import 'package:scrolling_years_calendar/widgets/day/day_number.dart';
+import 'package:scrolling_years_calendar/widgets/day/day_view.dart';
+import 'package:scrolling_years_calendar/widgets/month/month_view.dart';
+import 'package:scrolling_years_calendar/widgets/year/year_title.dart';
 import 'package:scrolling_years_calendar/widgets/year/year_view.dart';
 
 /// enum indicating the pagination enpoint direction
@@ -164,7 +166,7 @@ class _PagedVerticalYearsCalendarState
 
     _daysWidgets = List.generate(
       31,
-      (day) => DayNumber(
+      (day) => DayView(
         day: (day + 1).toString(),
       ),
     );
@@ -289,40 +291,81 @@ class _PagedVerticalYearsCalendarState
     }
   }
 
-  Map<int, Widget> _yearWidgets = {};
-
   @override
   Widget build(BuildContext context) {
+    final yearDate = widget.initialDate;
+
     return InfiniteListView.builder(
       // key: PageStorageKey(tab),
       // controller: _infiniteController,
       itemBuilder: (BuildContext context, int index) {
-        final date = DateTime(widget.initialDate.year + index);
+        final List<Widget> months =
+            List.generate(widget.monthsPerRow, (mIndex) {
+          final monthIndex = mIndex + (widget.monthsPerRow * index) + 1;
+          final monthDate = DateTime(yearDate.year, monthIndex);
 
-        // if (_yearWidgets.containsKey(index)) {
-        //   return _yearWidgets[index]!;
-        // }
+          return Expanded(
+            child: MonthView(
+              date: monthDate,
+              monthTitles: _monthTitles,
+              uniqueDates: _uniqueDates,
+              weekDayFormatter: widget.weekDayFormatter,
+              onMonthTap: widget.onMonthTap,
+              titleStyle: widget.monthTitleStyle,
+              showDayTitle: widget.showDayTitle,
+              startWeekWithSunday: widget.startWeekWithSunday,
+              dayBuilder: widget.dayBuilder,
+              daysWidgets: _daysWidgets,
+              dayTitleDecoration: widget.dayTitleDecoration,
+              monthDecoration: widget.monthDecoration,
+            ),
+          );
+        });
 
-        final yearWidget = YearView(
-          date: date,
-          monthsPerRow: widget.monthsPerRow,
-          onMonthTap: widget.onMonthTap,
-          monthTitleStyle: widget.monthTitleStyle,
-          monthTitles: _monthTitles,
-          dayBuilder: widget.dayBuilder,
-          daysWidgets: _daysWidgets,
-          showDayTitle: widget.showDayTitle,
-          startWeekWithSunday: widget.startWeekWithSunday,
-          monthDecoration: widget.monthDecoration,
-          dayTitleDecoration: widget.dayTitleDecoration,
-          weekDayFormatter: widget.weekDayFormatter,
-          yearDecoration: widget.yearDecoration,
-          uniqueDates: _uniqueDates,
-        );
+        final monthIndex = (widget.monthsPerRow * index) + 1;
+        final monthDate = DateTime(yearDate.year, monthIndex);
+        if (monthDate.month == 1) {
+          return Column(
+            children: [
+              AspectRatio(
+                aspectRatio: 10,
+                child: Align(
+                  alignment: Alignment.centerLeft,
+                  child: YearTitle(monthDate),
+                ),
+              ),
+              Row(children: months),
+            ],
+          );
+        }
 
-        // _yearWidgets[index] = yearWidget;
-
-        return yearWidget;
+        return Row(children: months);
+        // final date = DateTime(widget.initialDate.year + index);
+        //
+        // // if (_yearWidgets.containsKey(index)) {
+        // //   return _yearWidgets[index]!;
+        // // }
+        //
+        // final yearWidget = YearView(
+        //   date: date,
+        //   monthsPerRow: widget.monthsPerRow,
+        //   onMonthTap: widget.onMonthTap,
+        //   monthTitleStyle: widget.monthTitleStyle,
+        //   monthTitles: _monthTitles,
+        //   dayBuilder: widget.dayBuilder,
+        //   daysWidgets: _daysWidgets,
+        //   showDayTitle: widget.showDayTitle,
+        //   startWeekWithSunday: widget.startWeekWithSunday,
+        //   monthDecoration: widget.monthDecoration,
+        //   dayTitleDecoration: widget.dayTitleDecoration,
+        //   weekDayFormatter: widget.weekDayFormatter,
+        //   yearDecoration: widget.yearDecoration,
+        //   uniqueDates: _uniqueDates,
+        // );
+        //
+        // // _yearWidgets[index] = yearWidget;
+        //
+        // return yearWidget;
       },
       // anchor: 0.5,
     );
