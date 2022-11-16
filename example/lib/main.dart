@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:scrolling_years_calendar/paged_vertical_years_calendar.dart';
-import 'package:scrolling_years_calendar/utils/constants.dart';
 
 void main() => runApp(MyApp());
 
@@ -32,36 +31,6 @@ class HomePage extends StatelessWidget {
       appBar: AppBar(
         title: const Text('Flutter Scrolling Calendar'),
       ),
-      // body: ScrollingYearsCalendar(
-      //   // Required parameters
-      //   context: context,
-      //   monthsPerRow: 3,
-      //   initialDate: initialDate,
-      //   showDayTitle: true,
-      //   upperLimitDate:
-      //       DateTime.now().subtract(const Duration(days: 5 * 365)),
-      //   lowerLimitDate: DateTime.now().add(const Duration(days: 2 * 365)),
-      //   dayBuilder: (context, date) {
-      //     final now = initialDate;
-      //
-      //     if (now.day == date.day &&
-      //         now.month == date.month &&
-      //         now.year == date.year) {
-      //       return BoxDecoration(
-      //         color: Colors.orange,
-      //         borderRadius: BorderRadius.circular(30),
-      //       );
-      //     }
-      //
-      //     return null;
-      //   },
-      //   onMonthTap: (date) => print('Tapped ${date.toString()}'),
-      //   monthTitleStyle: TextStyle(
-      //     fontSize: 16,
-      //     fontWeight: FontWeight.bold,
-      //     color: Colors.blue,
-      //   ),
-      // ),
       body: PagedVerticalYearsCalendar(
         initialDate: initialDate,
         minDate: DateTime.now().subtract(const Duration(days: 5 * 365)),
@@ -97,7 +66,7 @@ class HomePage extends StatelessWidget {
 
           return TextStyle();
         },
-        // onMonthTap: (date) => print('Tapped ${date.toString()}'),
+        onMonthTap: (date) => print('Tapped ${date.toString()}'),
       ),
     );
   }
