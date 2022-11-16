@@ -3,32 +3,49 @@ import 'package:scrolling_years_calendar/utils/constants.dart';
 
 abstract class AbstractDayWidget extends StatelessWidget {
   const AbstractDayWidget({
-    required this.dayBuilder,
-    required this.dayTitleDecoration,
+    required this.dayDecorationBuilder,
+    required this.dayStyleBuilder,
     super.key,
   });
 
-  final DayWidgetBuilder dayBuilder;
-  final DecorationBuilder dayTitleDecoration;
+  final DecorationWidgetBuilder dayDecorationBuilder;
+  final TextStyleBuilder dayStyleBuilder;
 }
 
-abstract class AbstractMonthWidget extends AbstractDayWidget {
-  const AbstractMonthWidget({
-    required this.monthDecoration,
-    required this.dayTitles,
-    required this.monthTitles,
-    required this.showDayTitle,
-    required this.startWeekWithSunday,
-    required this.uniqueDates,
-    required super.dayBuilder,
-    required super.dayTitleDecoration,
+abstract class AbstractDayTitleWidget extends StatelessWidget {
+  const AbstractDayTitleWidget({
+    required this.dayTitleDecorationBuilder,
+    required this.dayTitleStyleBuilder,
     super.key,
   });
 
-  final DecorationBuilder monthDecoration;
-  final List<String> monthTitles;
+  final DecorationWidgetBuilder dayTitleDecorationBuilder;
+  final TextStyleBuilder dayTitleStyleBuilder;
+}
+
+abstract class AbstractMonthWidget extends StatelessWidget {
+  const AbstractMonthWidget({
+    required this.dayDecorationBuilder,
+    required this.dayStyleBuilder,
+    required this.dayTitles,
+    required this.dayTitleDecorationBuilder,
+    required this.dayTitleStyleBuilder,
+    required this.monthTitles,
+    required this.monthTitleStyleBuilder,
+    required this.monthDecorationBuilder,
+    required this.showDayTitle,
+    required this.startWeekWithSunday,
+    super.key,
+  });
+
   final List<String> dayTitles;
-  final Map<String, DateTime> uniqueDates;
+  final DecorationWidgetBuilder dayTitleDecorationBuilder;
+  final TextStyleBuilder dayTitleStyleBuilder;
+  final DecorationWidgetBuilder dayDecorationBuilder;
+  final TextStyleBuilder dayStyleBuilder;
+  final List<String> monthTitles;
+  final TextStyleBuilder monthTitleStyleBuilder;
+  final DecorationWidgetBuilder monthDecorationBuilder;
   final bool showDayTitle;
   final bool startWeekWithSunday;
 }
@@ -36,18 +53,22 @@ abstract class AbstractMonthWidget extends AbstractDayWidget {
 abstract class AbstractYearWidget extends AbstractMonthWidget {
   const AbstractYearWidget({
     required this.monthsPerRow,
-    required this.yearDecoration,
-    required super.dayBuilder,
-    required super.showDayTitle,
-    required super.uniqueDates,
-    required super.startWeekWithSunday,
-    required super.monthDecoration,
+    required this.yearDecorationBuilder,
+    required this.yearTitleStyleBuilder,
+    required super.dayDecorationBuilder,
+    required super.dayStyleBuilder,
     required super.dayTitles,
+    required super.dayTitleDecorationBuilder,
+    required super.dayTitleStyleBuilder,
     required super.monthTitles,
-    required super.dayTitleDecoration,
+    required super.monthTitleStyleBuilder,
+    required super.monthDecorationBuilder,
+    required super.showDayTitle,
+    required super.startWeekWithSunday,
     super.key,
   });
 
   final int monthsPerRow;
-  final DecorationBuilder yearDecoration;
+  final TextStyleBuilder yearTitleStyleBuilder;
+  final DecorationWidgetBuilder yearDecorationBuilder;
 }

@@ -1,33 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
-typedef DayWidgetBuilder = Widget Function(
+typedef DecorationWidgetBuilder = Widget? Function(
   BuildContext context,
   DateTime date,
 );
 
-typedef DecorationBuilder = Decoration? Function(
+final DecorationWidgetBuilder defaultDecorationWidgetBuilder = (context, date) {
+  return const SizedBox();
+};
+
+typedef TextStyleBuilder = TextStyle Function(
   BuildContext context,
   DateTime date,
 );
 
-final DecorationBuilder defaultDayDecoration = (context, date) {
-  return BoxDecoration(
-    color: Theme.of(context).cardColor,
-  );
-};
-
-final DecorationBuilder defaultMonthDecoration = (context, date) {
-  return BoxDecoration(
-    color: Theme.of(context).cardColor,
-    borderRadius: BorderRadius.circular(8),
-  );
-};
-
-final DecorationBuilder defaultYearDecoration = (context, date) {
-  return BoxDecoration(
-    color: Theme.of(context).cardColor,
-  );
+final TextStyleBuilder defaultTextStyleBuilder = (context, date) {
+  return Theme.of(context).textTheme.bodyText1 ?? TextStyle();
 };
 
 final defaultWeekDayFormatter = DateFormat('E');

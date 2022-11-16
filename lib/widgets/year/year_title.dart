@@ -11,6 +11,7 @@ class YearTitle extends StatelessWidget {
     final style = TextStyle(fontSize: 20).copyWith(fontSize: 60);
 
     return Container(
+      padding: const EdgeInsets.only(left: 16),
       child: AutoSizeText(
         date.year.toString(),
         style: style,

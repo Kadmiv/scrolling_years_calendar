@@ -1,14 +1,9 @@
 import 'package:flutter/material.dart' hide DateUtils;
-import 'package:flutter/rendering.dart';
 import 'package:infinite_listview/infinite_listview.dart';
-import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 import 'package:intl/intl.dart';
 import 'package:scrolling_years_calendar/utils/constants.dart';
-import 'package:scrolling_years_calendar/utils/extentions.dart';
-import 'package:scrolling_years_calendar/widgets/day/day_view.dart';
 import 'package:scrolling_years_calendar/widgets/month/month_view.dart';
 import 'package:scrolling_years_calendar/widgets/year/year_title.dart';
-import 'package:scrolling_years_calendar/widgets/year/year_view.dart';
 
 /// enum indicating the pagination enpoint direction
 enum PaginationDirection {
@@ -39,11 +34,8 @@ class PagedVerticalYearsCalendar extends StatefulWidget {
     required this.initialDate,
     required this.minDate,
     required this.maxDate,
-    required this.dayBuilder,
-    this.monthBuilder,
     this.addAutomaticKeepAlives = false,
     this.onDayPressed,
-    this.onMonthLoaded,
     this.onPaginationCompleted,
     this.invisibleMonthsThreshold = 1,
     this.physics,
@@ -57,15 +49,29 @@ class PagedVerticalYearsCalendar extends StatefulWidget {
     this.showDayTitle = false,
     this.startWeekWithSunday = false,
     this.yearTitleBuilder,
-    DecorationBuilder? dayTitleDecoration,
-    DecorationBuilder? monthDecoration,
-    DecorationBuilder? yearDecoration,
-    List<DateTime>? uniqueDates,
+    TextStyleBuilder? yearTitleStyleBuilder,
+    DecorationWidgetBuilder? yearDecorationBuilder,
+    DecorationWidgetBuilder? dayDecorationBuilder,
+    TextStyleBuilder? dayStyleBuilder,
+    DecorationWidgetBuilder? dayTitleDecorationBuilder,
+    TextStyleBuilder? dayTitleStyleBuilder,
+    TextStyleBuilder? monthTitleStyleBuilder,
+    DecorationWidgetBuilder? monthDecorationBuilder,
     super.key,
-  })  : yearDecoration = yearDecoration ?? defaultYearDecoration,
-        dayTitleDecoration = dayTitleDecoration ?? defaultDayDecoration,
-        uniqueDates = uniqueDates ?? [],
-        monthDecoration = monthDecoration ?? defaultMonthDecoration,
+  })  : yearTitleStyleBuilder =
+            yearTitleStyleBuilder ?? defaultTextStyleBuilder,
+        yearDecorationBuilder =
+            yearDecorationBuilder ?? defaultDecorationWidgetBuilder,
+        dayStyleBuilder = dayStyleBuilder ?? defaultTextStyleBuilder,
+        dayDecorationBuilder =
+            dayDecorationBuilder ?? defaultDecorationWidgetBuilder,
+        dayTitleStyleBuilder = dayTitleStyleBuilder ?? defaultTextStyleBuilder,
+        dayTitleDecorationBuilder =
+            dayTitleDecorationBuilder ?? defaultDecorationWidgetBuilder,
+        monthTitleStyleBuilder =
+            monthTitleStyleBuilder ?? defaultTextStyleBuilder,
+        monthDecorationBuilder =
+            monthDecorationBuilder ?? defaultDecorationWidgetBuilder,
         monthFormatter = monthFormatter ?? defaultMonthFormatter,
         weekDayFormatter = weekDayFormatter ?? defaultWeekDayFormatter,
         monthsPerRow = monthsPerRow ?? 3;
@@ -86,19 +92,6 @@ class PagedVerticalYearsCalendar extends StatefulWidget {
   final TextStyle? monthTitleStyle;
   final Function(BuildContext context, DateTime year)? yearTitleBuilder;
 
-  /// a Builder used for month header generation. a default [MonthBuilder] is
-  /// used when no custom [MonthBuilder] is provided.
-  /// * [context]
-  /// * [int] year: 2021
-  /// * [int] month: 1-12
-  final MonthBuilder? monthBuilder;
-
-  /// a Builder used for day generation. a default [DayBuilder] is
-  /// used when no custom [DayBuilder] is provided.
-  /// * [context]
-  /// * [DateTime] date
-  final DayWidgetBuilder dayBuilder;
-
   /// if the calendar should stay cached when the widget is no longer loaded.
   /// this can be used for maintaining the last state. defaults to `false`
   final bool addAutomaticKeepAlives;
@@ -106,9 +99,6 @@ class PagedVerticalYearsCalendar extends StatefulWidget {
   /// callback that provides the [DateTime] of the day that's been interacted
   /// with
   final ValueChanged<DateTime>? onDayPressed;
-
-  /// callback when a new paginated month is loaded.
-  final OnMonthLoaded? onMonthLoaded;
 
   /// called when the calendar pagination is completed. if no [minDate] or [maxDate] is
   /// provided this method is never called for that direction
@@ -127,14 +117,19 @@ class PagedVerticalYearsCalendar extends StatefulWidget {
   final ScrollController? scrollController;
 
   final int monthsPerRow;
-  final DecorationBuilder yearDecoration;
-  final DecorationBuilder monthDecoration;
   final DateFormat monthFormatter;
   final DateFormat weekDayFormatter;
-  final DecorationBuilder dayTitleDecoration;
+
+  final TextStyleBuilder yearTitleStyleBuilder;
+  final DecorationWidgetBuilder yearDecorationBuilder;
+  final DecorationWidgetBuilder dayDecorationBuilder;
+  final TextStyleBuilder dayStyleBuilder;
+  final DecorationWidgetBuilder dayTitleDecorationBuilder;
+  final TextStyleBuilder dayTitleStyleBuilder;
+  final TextStyleBuilder monthTitleStyleBuilder;
+  final DecorationWidgetBuilder monthDecorationBuilder;
   final bool showDayTitle;
   final bool startWeekWithSunday;
-  final List<DateTime> uniqueDates;
 
   @override
   _PagedVerticalYearsCalendarState createState() =>
@@ -143,15 +138,8 @@ class PagedVerticalYearsCalendar extends StatefulWidget {
 
 class _PagedVerticalYearsCalendarState
     extends State<PagedVerticalYearsCalendar> {
-  late PagingController<int, DateTime> _pagingReplyUpController;
-  late PagingController<int, DateTime> _pagingReplyDownController;
-
-  final Key downListKey = UniqueKey();
-  late bool hideUp;
-
   late final List<String> _monthTitles;
   late final List<String> _dayTitles;
-  late final Map<String, DateTime> _uniqueDates;
 
   @override
   void initState() {
@@ -174,12 +162,6 @@ class _PagedVerticalYearsCalendarState
       );
     });
 
-    _uniqueDates = Map.fromIterable(
-      widget.uniqueDates,
-      key: (item) => item.toString(),
-      value: (item) => item,
-    );
-
     if (widget.minDate != null &&
         widget.initialDate.isBefore(widget.minDate!)) {
       throw ArgumentError("initialDate cannot be before minDate");
@@ -195,113 +177,28 @@ class _PagedVerticalYearsCalendarState
     //     'initialDate must be on or before minDate'),
     // assert(minDate != null && maxDate != null && !maxDate.isAfter(minDate),
     //     'minDate must be on or after maxDate'),
-
-    // hideUp = (widget.minDate == null || widget.minDate!.isSameYear(widget.initialDate));
-    hideUp = true;
-
-    _pagingReplyUpController = PagingController<int, DateTime>(
-      firstPageKey: 0,
-      invisibleItemsThreshold: widget.invisibleMonthsThreshold,
-    );
-    _pagingReplyUpController.addPageRequestListener(_fetchUpPage);
-    _pagingReplyUpController.addStatusListener(paginationStatusUp);
-
-    _pagingReplyDownController = PagingController<int, DateTime>(
-      firstPageKey: 0,
-      invisibleItemsThreshold: widget.invisibleMonthsThreshold,
-    );
-    _pagingReplyDownController.addPageRequestListener(_fetchDownPage);
-    _pagingReplyDownController.addStatusListener(paginationStatusDown);
-
-    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      // _generateUsedWidgets();
-    });
-  }
-
-  @override
-  void didUpdateWidget(covariant PagedVerticalYearsCalendar oldWidget) {
-    super.didUpdateWidget(oldWidget);
-
-    if (widget.minDate != oldWidget.minDate) {
-      _pagingReplyUpController.refresh();
-
-      hideUp = !(widget.minDate == null ||
-          !widget.minDate!.isSameYear(widget.initialDate));
-    }
-  }
-
-  void paginationStatusUp(PagingStatus state) {
-    if (state == PagingStatus.completed) {
-      return widget.onPaginationCompleted?.call(PaginationDirection.up);
-    }
-  }
-
-  void paginationStatusDown(PagingStatus state) {
-    if (state == PagingStatus.completed) {
-      return widget.onPaginationCompleted?.call(PaginationDirection.down);
-    }
-  }
-
-  /// fetch a new [DateTime] object based on the [pageKey] which is the Nth month
-  /// from the start date
-  Future<void> _fetchUpPage(int pageKey) async {
-    try {
-      final year = DateTime(
-        widget.initialDate.year - pageKey - 1,
-      );
-
-      // WidgetsBinding.instance.addPostFrameCallback(
-      //   (_) => widget.onMonthLoaded?.call(month.year, month.month),
-      // );
-
-      final newItems = [year];
-      final isLastPage =
-          widget.minDate != null && widget.minDate!.isSameDayOrAfter(year);
-
-      if (isLastPage) {
-        return _pagingReplyUpController.appendLastPage([year]);
-      }
-
-      final nextPageKey = pageKey + 1;
-      _pagingReplyUpController.appendPage(newItems, nextPageKey);
-    } catch (_) {
-      _pagingReplyUpController.error;
-    }
-  }
-
-  Future<void> _fetchDownPage(int pageKey) async {
-    try {
-      final year = DateTime(
-        widget.initialDate.year + pageKey,
-      );
-
-      // WidgetsBinding.instance.addPostFrameCallback(
-      //   (_) => widget.onMonthLoaded?.call(month.year, month.month),
-      // );
-
-      final newItems = [year];
-      final isLastPage =
-          widget.maxDate != null && widget.minDate!.isSameDayOrAfter(year);
-
-      if (isLastPage) {
-        return _pagingReplyUpController.appendLastPage([year]);
-      }
-
-      final nextPageKey = pageKey + 1;
-      _pagingReplyUpController.appendPage(newItems, nextPageKey);
-    } catch (_) {
-      _pagingReplyDownController.error;
-    }
   }
 
   @override
   Widget build(BuildContext context) {
-    final yearDate = DateTime(widget.initialDate.year);
-
     return InfiniteListView.builder(
       // key: PageStorageKey(tab),
       // controller: _infiniteController,
       itemBuilder: (BuildContext context, int index) {
+        final yearDate = widget.initialDate;
+
+        final firstMonthIndex = (widget.monthsPerRow * index) + 1;
+        final firstMonthDate = DateTime(yearDate.year, firstMonthIndex);
+        final isStartOfYear = firstMonthDate.month == 1;
+
+        // if (index >= 10) {
+        //   return SizedBox();
+        // }
+        //
+        // if (index <= -10) {
+        //   return SizedBox();
+        // }
+
         final List<Widget> months =
             List.generate(widget.monthsPerRow, (mIndex) {
           final monthIndex = mIndex + (widget.monthsPerRow * index) + 1;
@@ -311,29 +208,28 @@ class _PagedVerticalYearsCalendarState
             child: MonthView(
               date: monthDate,
               monthTitles: _monthTitles,
-              uniqueDates: _uniqueDates,
               dayTitles: _dayTitles,
               onMonthTap: widget.onMonthTap,
-              titleStyle: widget.monthTitleStyle,
               showDayTitle: widget.showDayTitle,
               startWeekWithSunday: widget.startWeekWithSunday,
-              dayBuilder: widget.dayBuilder,
-              dayTitleDecoration: widget.dayTitleDecoration,
-              monthDecoration: widget.monthDecoration,
+              dayDecorationBuilder: widget.dayDecorationBuilder,
+              dayStyleBuilder: widget.dayStyleBuilder,
+              dayTitleDecorationBuilder: widget.dayTitleDecorationBuilder,
+              dayTitleStyleBuilder: widget.dayTitleStyleBuilder,
+              monthTitleStyleBuilder: widget.monthTitleStyleBuilder,
+              monthDecorationBuilder: widget.monthDecorationBuilder,
             ),
           );
         });
 
-        final monthIndex = (widget.monthsPerRow * index) + 1;
-        final monthDate = DateTime(yearDate.year, monthIndex);
-        if (monthDate.month == 1) {
+        if (isStartOfYear) {
           return Column(
             children: [
               AspectRatio(
                 aspectRatio: 10,
                 child: Align(
                   alignment: Alignment.centerLeft,
-                  child: YearTitle(monthDate),
+                  child: YearTitle(firstMonthDate),
                 ),
               ),
               Row(children: months),
@@ -342,86 +238,7 @@ class _PagedVerticalYearsCalendarState
         }
 
         return Row(children: months);
-        // final date = DateTime(widget.initialDate.year + index);
-        //
-        // // if (_yearWidgets.containsKey(index)) {
-        // //   return _yearWidgets[index]!;
-        // // }
-        //
-        // final yearWidget = YearView(
-        //   date: date,
-        //   monthsPerRow: widget.monthsPerRow,
-        //   onMonthTap: widget.onMonthTap,
-        //   monthTitleStyle: widget.monthTitleStyle,
-        //   monthTitles: _monthTitles,
-        //   dayBuilder: widget.dayBuilder,
-        //   daysWidgets: _daysWidgets,
-        //   showDayTitle: widget.showDayTitle,
-        //   startWeekWithSunday: widget.startWeekWithSunday,
-        //   monthDecoration: widget.monthDecoration,
-        //   dayTitleDecoration: widget.dayTitleDecoration,
-        //   weekDayFormatter: widget.weekDayFormatter,
-        //   yearDecoration: widget.yearDecoration,
-        //   uniqueDates: _uniqueDates,
-        // );
-        //
-        // // _yearWidgets[index] = yearWidget;
-        //
-        // return yearWidget;
       },
-      // anchor: 0.5,
     );
-    // return Scrollable(
-    //   controller: widget.scrollController,
-    //   physics: widget.physics,
-    //   viewportBuilder: (BuildContext context, ViewportOffset position) {
-    //     return Viewport(
-    //       offset: position,
-    //       center: downListKey,
-    //       slivers: [
-    //         if (!hideUp)
-    //           PagedSliverList(
-    //             pagingController: _pagingReplyUpController,
-    //             builderDelegate: PagedChildBuilderDelegate<DateTime>(
-    //               itemBuilder:
-    //                   (BuildContext context, DateTime date, int index) {
-    //                 /// Gets a widget with the view of the given year.
-    //                 return buildYear(date);
-    //               },
-    //             ),
-    //           ),
-    //         PagedSliverList(
-    //           key: downListKey,
-    //           pagingController: _pagingReplyDownController,
-    //           builderDelegate: PagedChildBuilderDelegate<DateTime>(
-    //             itemBuilder: (BuildContext context, DateTime date, int index) {
-    //               /// Gets a widget with the view of the given year.
-    //               return buildYear(date);
-    //             },
-    //           ),
-    //         ),
-    //       ],
-    //     );
-    //   },
-    // );
-    //
-    // return ListView.builder(
-    //     itemCount: 10,
-    //     itemBuilder: (context, index) {
-    //       final date = DateTime(widget.initialDate.year + index);
-    //       return buildYear(date);
-    //     });
-  }
-
-  @override
-  void dispose() {
-    _pagingReplyUpController.dispose();
-    _pagingReplyDownController.dispose();
-    super.dispose();
   }
 }
-
-typedef MonthBuilder = Widget Function(
-    BuildContext context, int month, int year);
-
-typedef OnMonthLoaded = void Function(int year, int month);

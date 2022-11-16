@@ -11,27 +11,27 @@ const kCellsCountWithWeekTitles = 7 * 7;
 class MonthView extends AbstractMonthWidget {
   const MonthView({
     required this.date,
-    required super.monthDecoration,
-    required super.monthTitles,
-    required super.uniqueDates,
+    required super.dayDecorationBuilder,
+    required super.dayStyleBuilder,
     required super.dayTitles,
-    required super.dayBuilder,
-    required super.dayTitleDecoration,
+    required super.dayTitleDecorationBuilder,
+    required super.dayTitleStyleBuilder,
+    required super.monthTitles,
+    required super.monthTitleStyleBuilder,
+    required super.monthDecorationBuilder,
     required super.showDayTitle,
     required super.startWeekWithSunday,
     this.onMonthTap,
-    this.titleStyle,
     super.key,
   });
 
   final DateTime date;
   final Function(DateTime date)? onMonthTap;
-  final TextStyle? titleStyle;
 
   @override
   Widget build(BuildContext context) {
     final monthView = Container(
-      decoration: monthDecoration.call(context, date),
+      // decoration: monthDecorationBuilder.call(context, date),
       margin: const EdgeInsets.all(4),
       padding: const EdgeInsets.all(6),
       alignment: Alignment.center,
@@ -43,7 +43,9 @@ class MonthView extends AbstractMonthWidget {
               alignment: Alignment.centerLeft,
               child: MonthTitle(
                 month: super.monthTitles[date.month - 1],
-                style: titleStyle,
+                date: date,
+                monthTitleStyleBuilder: super.monthTitleStyleBuilder,
+                monthDecorationBuilder: super.monthDecorationBuilder,
               ),
             ),
           ),
@@ -114,20 +116,19 @@ class MonthView extends AbstractMonthWidget {
         if (showDayTitle && index < 7) {
           return DayTitle(
             day: super.dayTitles[index],
-            decoration: dayTitleDecoration(context, dayDate),
+            dayTitleDecorationBuilder: super.dayTitleDecorationBuilder,
+            dayTitleStyleBuilder: super.dayTitleStyleBuilder,
           );
         }
 
         Widget dayWidget = const SizedBox();
 
         if (day > 0 && day <= daysInMonth) {
-          if (uniqueDates.containsKey(dayDate.toString())) {
-            dayWidget = dayBuilder(context, dayDate);
-          } else {
-            dayWidget = DayView(
-              date: dayDate,
-            );
-          }
+          dayWidget = DayView(
+            date: dayDate,
+            dayDecorationBuilder: super.dayDecorationBuilder,
+            dayStyleBuilder: super.dayStyleBuilder,
+          );
         }
 
         return dayWidget;
