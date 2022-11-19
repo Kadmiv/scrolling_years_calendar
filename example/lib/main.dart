@@ -33,7 +33,7 @@ class HomePage extends StatelessWidget {
       ),
       body: PagedVerticalYearsCalendar(
         initialDate: initialDate,
-        minDate: DateTime.now().subtract(const Duration(days: 5 * 365)),
+        minDate: DateTime.now().subtract(const Duration(days: 2 * 365)),
         maxDate: DateTime.now().add(const Duration(days: 2 * 365)),
         showDayTitle: true,
         // startWeekWithSunday: true,

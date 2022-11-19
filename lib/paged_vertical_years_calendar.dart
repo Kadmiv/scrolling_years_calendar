@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart' hide DateUtils;
-import 'package:infinite_listview/infinite_listview.dart';
+import 'package:flutter/rendering.dart';
 import 'package:intl/intl.dart';
 import 'package:scrolling_years_calendar/utils/constants.dart';
 import 'package:scrolling_years_calendar/widgets/month/month_view.dart';
@@ -140,6 +140,8 @@ class _PagedVerticalYearsCalendarState
     extends State<PagedVerticalYearsCalendar> {
   late final List<String> _monthTitles;
   late final List<String> _dayTitles;
+  late final SliverChildBuilderDelegate forwardDelegate;
+  late final SliverChildBuilderDelegate reverseDelegate;
 
   @override
   void initState() {
@@ -177,68 +179,115 @@ class _PagedVerticalYearsCalendarState
     //     'initialDate must be on or before minDate'),
     // assert(minDate != null && maxDate != null && !maxDate.isAfter(minDate),
     //     'minDate must be on or after maxDate'),
+
+    reverseDelegate = SliverChildBuilderDelegate(
+      (context, index) {
+        final itemIndex = -(index + 1);
+        final minDate = widget.minDate;
+
+        /// check is last item of reverse list
+        if (minDate != null && _isMinDate(minDate, itemIndex)) {
+          return null;
+        }
+
+        return _buildItem(context, itemIndex);
+      },
+    );
+
+    forwardDelegate = SliverChildBuilderDelegate(
+      (context, index) {
+        final itemIndex = index;
+        final maxDate = widget.maxDate;
+
+        /// check is last item of reverse list
+        if (maxDate != null && _isMaxDate(maxDate, itemIndex)) {
+          return null;
+        }
+
+        return _buildItem(context, itemIndex);
+      },
+    );
   }
+
+  Key forwardListKey = UniqueKey();
 
   @override
   Widget build(BuildContext context) {
-    return InfiniteListView.builder(
-      // key: PageStorageKey(tab),
-      // controller: _infiniteController,
-      itemBuilder: (BuildContext context, int index) {
-        final yearDate = widget.initialDate;
-
-        final firstMonthIndex = (widget.monthsPerRow * index) + 1;
-        final firstMonthDate = DateTime(yearDate.year, firstMonthIndex);
-        final isStartOfYear = firstMonthDate.month == 1;
-
-        // if (index >= 10) {
-        //   return SizedBox();
-        // }
-        //
-        // if (index <= -10) {
-        //   return SizedBox();
-        // }
-
-        final List<Widget> months =
-            List.generate(widget.monthsPerRow, (mIndex) {
-          final monthIndex = mIndex + (widget.monthsPerRow * index) + 1;
-          final monthDate = DateTime(yearDate.year, monthIndex);
-
-          return Expanded(
-            child: MonthView(
-              date: monthDate,
-              monthTitles: _monthTitles,
-              dayTitles: _dayTitles,
-              onMonthTap: widget.onMonthTap,
-              showDayTitle: widget.showDayTitle,
-              startWeekWithSunday: widget.startWeekWithSunday,
-              dayDecorationBuilder: widget.dayDecorationBuilder,
-              dayStyleBuilder: widget.dayStyleBuilder,
-              dayTitleDecorationBuilder: widget.dayTitleDecorationBuilder,
-              dayTitleStyleBuilder: widget.dayTitleStyleBuilder,
-              monthTitleStyleBuilder: widget.monthTitleStyleBuilder,
-              monthDecorationBuilder: widget.monthDecorationBuilder,
-            ),
-          );
-        });
-
-        if (isStartOfYear) {
-          return Column(
-            children: [
-              AspectRatio(
-                aspectRatio: 10,
-                child: Align(
-                  alignment: Alignment.centerLeft,
-                  child: YearTitle(firstMonthDate),
-                ),
-              ),
-              Row(children: months),
-            ],
-          );
-        }
-
-        return Row(children: months);
+    return Scrollable(
+      viewportBuilder: (BuildContext context, ViewportOffset offset) {
+        return Viewport(offset: offset, center: forwardListKey, slivers: [
+          SliverList(delegate: reverseDelegate),
+          SliverList(
+            delegate: forwardDelegate,
+            key: forwardListKey,
+          ),
+        ]);
       },
     );
+  }
+
+  Widget _buildItem(BuildContext context, int index) {
+    final yearDate = widget.initialDate;
+
+    final firstMonthIndex = (widget.monthsPerRow * index) + 1;
+    final firstMonthDate = DateTime(yearDate.year, firstMonthIndex);
+    final isStartOfYear = firstMonthDate.month == 1;
+
+    final List<Widget> months = List.generate(widget.monthsPerRow, (mIndex) {
+      final monthIndex = mIndex + (widget.monthsPerRow * index) + 1;
+      final monthDate = DateTime(yearDate.year, monthIndex);
+
+      return Expanded(
+        child: MonthView(
+          date: monthDate,
+          monthTitles: _monthTitles,
+          dayTitles: _dayTitles,
+          onMonthTap: widget.onMonthTap,
+          showDayTitle: widget.showDayTitle,
+          startWeekWithSunday: widget.startWeekWithSunday,
+          dayDecorationBuilder: widget.dayDecorationBuilder,
+          dayStyleBuilder: widget.dayStyleBuilder,
+          dayTitleDecorationBuilder: widget.dayTitleDecorationBuilder,
+          dayTitleStyleBuilder: widget.dayTitleStyleBuilder,
+          monthTitleStyleBuilder: widget.monthTitleStyleBuilder,
+          monthDecorationBuilder: widget.monthDecorationBuilder,
+        ),
+      );
+    });
+
+    if (isStartOfYear) {
+      return Column(
+        children: [
+          AspectRatio(
+            aspectRatio: 10,
+            child: Align(
+              alignment: Alignment.centerLeft,
+              child: YearTitle(firstMonthDate),
+            ),
+          ),
+          Row(children: months),
+        ],
+      );
+    }
+
+    return Row(children: months);
+  }
+
+  bool _isMinDate(DateTime minDate, int index) {
+    final yearDate = widget.initialDate;
+    final firstMonthIndex = (widget.monthsPerRow * index) + 1;
+    final firstMonthDate = DateTime(yearDate.year, firstMonthIndex);
+    final isStartDate = firstMonthDate.year < widget.minDate!.year;
+
+    return isStartDate;
+  }
+
+  bool _isMaxDate(DateTime maxDate, int index) {
+    final yearDate = widget.initialDate;
+    final firstMonthIndex = (widget.monthsPerRow * index) + 1;
+    final lastMonthDate = DateTime(yearDate.year, firstMonthIndex);
+    final isEndDate = lastMonthDate.year > widget.maxDate!.year;
+
+    return isEndDate;
   }
 }
