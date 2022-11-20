@@ -9,7 +9,7 @@
 </p>
 
 <p align="center">
-  <img
+  <video
     src="https://raw.githubusercontent.com/mennorenkens/flutter_scrolling_calendar/master/screenshots/example.webm"
     height="400"
   >
