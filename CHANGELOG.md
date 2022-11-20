@@ -1,5 +1,13 @@
 # Changelog
 
+## [2.0.0] - 2022-11-20
+
+### Added
+
+- Full rewrite of lib
+- Make responsive and flexible UI - auto-sized text
+- Make simple and customizable calendar items - year, month and day background decoration and text styling
+
 ## [1.3.1] - 2020-08-10
 
 ### Fixed

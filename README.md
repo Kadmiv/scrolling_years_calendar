@@ -8,13 +8,6 @@
   >
 </p>
 
-<p align="center">
-  <video
-    src="https://raw.githubusercontent.com/mennorenkens/flutter_scrolling_calendar/master/screenshots/example.webm"
-    height="400"
-  >
-</p>
-
 # Flutter Scrolling Calendar
 
 A customizable calendar widget to easily scroll through the years.
