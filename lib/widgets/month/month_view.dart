@@ -33,7 +33,7 @@ class MonthView extends AbstractMonthWidget {
     final monthView = Container(
       // decoration: monthDecorationBuilder.call(context, date),
       margin: const EdgeInsets.all(4),
-      padding: const EdgeInsets.all(6),
+      // padding: const EdgeInsets.all(6),
       alignment: Alignment.center,
       child: Column(
         children: <Widget>[
@@ -50,7 +50,7 @@ class MonthView extends AbstractMonthWidget {
             ),
           ),
           Container(
-            margin: const EdgeInsets.only(top: 8),
+            margin: const EdgeInsets.only(top: 2),
             child: buildMonthDays(context),
           ),
         ],
@@ -116,6 +116,7 @@ class MonthView extends AbstractMonthWidget {
         if (showDayTitle && index < 7) {
           return DayTitle(
             day: super.dayTitles[index],
+            date: dayDate,
             dayTitleDecorationBuilder: super.dayTitleDecorationBuilder,
             dayTitleStyleBuilder: super.dayTitleStyleBuilder,
           );

@@ -5,38 +5,12 @@ import 'package:scrolling_years_calendar/utils/constants.dart';
 import 'package:scrolling_years_calendar/widgets/month/month_view.dart';
 import 'package:scrolling_years_calendar/widgets/year/year_title.dart';
 
-/// enum indicating the pagination enpoint direction
-enum PaginationDirection {
-  up,
-  down,
-}
-
-/// a minimalistic paginated calendar widget providing infinite customisation
-/// options and usefull paginated callbacks. all paremeters are optional.
-///
-/// ```
-/// PagedVerticalMonthsCalendar(
-///       startDate: DateTime(2021, 1, 1),
-///       endDate: DateTime(2021, 12, 31),
-///       onDayPressed: (day) {
-///            print('Date selected: $day');
-///          },
-///          onMonthLoaded: (year, month) {
-///            print('month loaded: $month-$year');
-///          },
-///          onPaginationCompleted: () {
-///            print('end reached');
-///          },
-///        ),
-/// ```
 class PagedVerticalYearsCalendar extends StatefulWidget {
   PagedVerticalYearsCalendar({
     required this.initialDate,
     required this.minDate,
     required this.maxDate,
-    this.addAutomaticKeepAlives = false,
-    this.onDayPressed,
-    this.onPaginationCompleted,
+    this.addAutomaticKeepAlives = true,
     this.invisibleMonthsThreshold = 1,
     this.physics,
     this.scrollController,
@@ -45,7 +19,6 @@ class PagedVerticalYearsCalendar extends StatefulWidget {
     DateFormat? monthFormatter,
     DateFormat? weekDayFormatter,
     this.onMonthTap,
-    this.monthTitleStyle,
     this.showDayTitle = false,
     this.startWeekWithSunday = false,
     this.yearTitleBuilder,
@@ -74,7 +47,11 @@ class PagedVerticalYearsCalendar extends StatefulWidget {
             monthDecorationBuilder ?? defaultDecorationWidgetBuilder,
         monthFormatter = monthFormatter ?? defaultMonthFormatter,
         weekDayFormatter = weekDayFormatter ?? defaultWeekDayFormatter,
-        monthsPerRow = monthsPerRow ?? 3;
+        monthsPerRow = monthsPerRow ?? 3,
+        assert(maxDate != null && !initialDate.isAfter(maxDate),
+            'initialDate must be on or after maxDate'),
+        assert(minDate != null && !initialDate.isBefore(minDate),
+            'initialDate must be on or before minDate');
 
   /// the initial date displayed by the calendar.
   /// if inititial date is nulll, the start date will be used
@@ -89,20 +66,11 @@ class PagedVerticalYearsCalendar extends StatefulWidget {
   final DateTime? maxDate;
 
   final Function(DateTime date)? onMonthTap;
-  final TextStyle? monthTitleStyle;
   final Function(BuildContext context, DateTime year)? yearTitleBuilder;
 
   /// if the calendar should stay cached when the widget is no longer loaded.
   /// this can be used for maintaining the last state. defaults to `false`
   final bool addAutomaticKeepAlives;
-
-  /// callback that provides the [DateTime] of the day that's been interacted
-  /// with
-  final ValueChanged<DateTime>? onDayPressed;
-
-  /// called when the calendar pagination is completed. if no [minDate] or [maxDate] is
-  /// provided this method is never called for that direction
-  final ValueChanged<PaginationDirection>? onPaginationCompleted;
 
   /// how many months should be loaded outside of the view. defaults to `1`
   final int invisibleMonthsThreshold;
@@ -143,6 +111,8 @@ class _PagedVerticalYearsCalendarState
   late final SliverChildBuilderDelegate forwardDelegate;
   late final SliverChildBuilderDelegate reverseDelegate;
 
+  final forwardListKey = UniqueKey();
+
   @override
   void initState() {
     super.initState();
@@ -164,22 +134,6 @@ class _PagedVerticalYearsCalendarState
       );
     });
 
-    if (widget.minDate != null &&
-        widget.initialDate.isBefore(widget.minDate!)) {
-      throw ArgumentError("initialDate cannot be before minDate");
-    }
-
-    if (widget.maxDate != null && widget.initialDate.isAfter(widget.maxDate!)) {
-      throw ArgumentError("initialDate cannot be after maxDate");
-    }
-
-    // assert(maxDate != null && !initialDate.isBefore(maxDate),
-    //     'initialDate must be on or after maxDate'),
-    // assert(minDate != null && !initialDate.isAfter(minDate),
-    //     'initialDate must be on or before minDate'),
-    // assert(minDate != null && maxDate != null && !maxDate.isAfter(minDate),
-    //     'minDate must be on or after maxDate'),
-
     reverseDelegate = SliverChildBuilderDelegate(
       (context, index) {
         final itemIndex = -(index + 1);
@@ -192,6 +146,7 @@ class _PagedVerticalYearsCalendarState
 
         return _buildItem(context, itemIndex);
       },
+      addAutomaticKeepAlives: widget.addAutomaticKeepAlives,
     );
 
     forwardDelegate = SliverChildBuilderDelegate(
@@ -206,10 +161,9 @@ class _PagedVerticalYearsCalendarState
 
         return _buildItem(context, itemIndex);
       },
+      addAutomaticKeepAlives: widget.addAutomaticKeepAlives,
     );
   }
-
-  Key forwardListKey = UniqueKey();
 
   @override
   Widget build(BuildContext context) {
@@ -233,7 +187,7 @@ class _PagedVerticalYearsCalendarState
     final firstMonthDate = DateTime(yearDate.year, firstMonthIndex);
     final isStartOfYear = firstMonthDate.month == 1;
 
-    final List<Widget> months = List.generate(widget.monthsPerRow, (mIndex) {
+    final months = List<Widget>.generate(widget.monthsPerRow, (mIndex) {
       final monthIndex = mIndex + (widget.monthsPerRow * index) + 1;
       final monthDate = DateTime(yearDate.year, monthIndex);
 

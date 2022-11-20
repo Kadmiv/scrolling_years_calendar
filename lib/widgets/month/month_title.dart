@@ -21,15 +21,19 @@ class MonthTitle extends StatelessWidget {
     final style = monthTitleStyleBuilder(context, date).copyWith(fontSize: 40);
 
     return Stack(
+      alignment: Alignment.centerLeft,
       children: [
         monthDecorationBuilder(context, date) ?? const SizedBox(),
-        AutoSizeText(
-          month,
-          maxLines: 1,
-          style: style,
-          minFontSize: 8,
-          stepGranularity: 2,
-          group: AutoSizeGroup(),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 1),
+          child: AutoSizeText(
+            month,
+            maxLines: 1,
+            style: style,
+            minFontSize: 8,
+            stepGranularity: 2,
+            group: AutoSizeGroup(),
+          ),
         ),
       ],
     );

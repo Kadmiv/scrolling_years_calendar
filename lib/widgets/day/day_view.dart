@@ -25,7 +25,7 @@ class DayView extends AbstractDayWidget {
           ),
           Container(
             height: constraints.maxHeight / 1.15,
-            padding: const EdgeInsets.all(1),
+            margin: const EdgeInsets.all(1),
             alignment: Alignment.center,
             child: AutoSizeText(
               date.day.toString(),

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:scrolling_years_calendar/paged_vertical_years_calendar.dart';
+import 'package:scrolling_years_calendar/utils/extentions.dart';
 
 void main() => runApp(MyApp());
 
@@ -38,14 +39,8 @@ class HomePage extends StatelessWidget {
         showDayTitle: true,
         // startWeekWithSunday: true,
         monthsPerRow: 3,
-        // to prevent the data from being reset every time a user loads or
-        // unloads this widget
-        addAutomaticKeepAlives: true,
-
         dayDecorationBuilder: (context, date) {
-          if (date.year == initialDate.year &&
-              date.month == initialDate.month &&
-              date.day == initialDate.day) {
+          if (date.isSameDay(initialDate)) {
             return Container(
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(40),
@@ -56,11 +51,80 @@ class HomePage extends StatelessWidget {
 
           return null;
         },
-
         dayStyleBuilder: (context, date) {
-          if (date.year == initialDate.year &&
-              date.month == initialDate.month &&
-              date.day == initialDate.day) {
+          if (date.isSameDay(initialDate)) {
+            return TextStyle(color: Colors.white);
+          }
+
+          return TextStyle();
+        },
+        dayTitleDecorationBuilder: (context, date) {
+          if (date.weekday==6||date.weekday==7) {
+            return Container(
+              decoration: BoxDecoration(
+                color: Color.fromRGBO(255, 132, 132, 0.8),
+              ),
+            );
+          }
+
+          return null;
+        },
+        dayTitleStyleBuilder: (context, date) {
+          if (date.weekday==6||date.weekday==7) {
+            return TextStyle(color: Colors.white);
+          }
+
+          return TextStyle();
+        },
+        monthDecorationBuilder: (context, date) {
+          if (date.month >= 1 && date.month < 3 || date.month == 12) {
+            return Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(8),
+                  topRight: Radius.circular(8),
+                ),
+                color: Colors.blueAccent,
+              ),
+            );
+          }
+          if (date.month >= 3 && date.month < 6) {
+            return Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(8),
+                  topRight: Radius.circular(8),
+                ),
+                color: Colors.lightGreenAccent,
+              ),
+            );
+          } else if (date.month >= 6 && date.month < 9) {
+            return Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(8),
+                  topRight: Radius.circular(8),
+                ),
+                color: Colors.yellowAccent,
+              ),
+            );
+          } else if (date.month >= 9 && date.month < 12) {
+            return Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(8),
+                  topRight: Radius.circular(8),
+                ),
+                color: Colors.orangeAccent,
+              ),
+            );
+          }
+
+          return null;
+        },
+        monthTitleStyleBuilder: (context, date) {
+          if ((date.month >= 1 && date.month < 3 ) ||
+              (date.month >= 9 && date.month <= 12)) {
             return TextStyle(color: Colors.white);
           }
 
