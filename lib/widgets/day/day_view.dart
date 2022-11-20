@@ -33,7 +33,6 @@ class DayView extends AbstractDayWidget {
               textAlign: TextAlign.center,
               minFontSize: 4,
               maxLines: 1,
-              // overflow: TextOverflow.ellipsis,
             ),
           ),
         ],

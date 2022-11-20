@@ -27,7 +27,6 @@ class YearTitle extends StatelessWidget {
           child: AutoSizeText(
             date.year.toString(),
             style: style,
-            // textAlign: TextAlign.center,
             minFontSize: 10,
             stepGranularity: 2,
             maxLines: 1,

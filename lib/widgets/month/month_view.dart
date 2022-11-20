@@ -19,7 +19,7 @@ class MonthView extends AbstractMonthWidget {
     required super.monthTitles,
     required super.monthTitleStyleBuilder,
     required super.monthDecorationBuilder,
-    required super.showDayTitle,
+    required super.showWeekDayTitle,
     required super.startWeekWithSunday,
     this.onMonthTap,
     super.key,
@@ -31,9 +31,7 @@ class MonthView extends AbstractMonthWidget {
   @override
   Widget build(BuildContext context) {
     final monthView = Container(
-      // decoration: monthDecorationBuilder.call(context, date),
       margin: const EdgeInsets.all(4),
-      // padding: const EdgeInsets.all(6),
       alignment: Alignment.center,
       child: Column(
         children: <Widget>[
@@ -82,7 +80,7 @@ class MonthView extends AbstractMonthWidget {
     }
 
     final cellsCount =
-        showDayTitle ? kCellsCountWithWeekTitles : kCellsCountWithoutWeekTitles;
+        showWeekDayTitle ? kCellsCountWithWeekTitles : kCellsCountWithoutWeekTitles;
 
     return GridView.builder(
       shrinkWrap: true,
@@ -90,9 +88,8 @@ class MonthView extends AbstractMonthWidget {
       gridDelegate:
           const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 7),
       itemCount: cellsCount,
-      // padding: const EdgeInsets.all(20),
       itemBuilder: (BuildContext ctx, int index) {
-        final difference = showDayTitle ? 7 : 0;
+        final difference = showWeekDayTitle ? 7 : 0;
 
         final day = index -
             firstWeekdayOfMonth -
@@ -105,15 +102,7 @@ class MonthView extends AbstractMonthWidget {
           day,
         );
 
-        if (dayDate.year == 2022 && dayDate.month == 5 && dayDate.day == 1) {
-          print('');
-        }
-
-        if (dayDate.year == 2022 && dayDate.month == 8 && dayDate.day == 1) {
-          print('');
-        }
-
-        if (showDayTitle && index < 7) {
+        if (showWeekDayTitle && index < 7) {
           return DayTitle(
             day: super.dayTitles[index],
             date: dayDate,

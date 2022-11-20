@@ -20,7 +20,7 @@ class DayTitle extends AbstractDayTitleWidget {
 
     return LayoutBuilder(builder: (context, constraints) {
       return Container(
-        padding: EdgeInsets.all(1),
+        padding: const EdgeInsets.all(1),
         child: Stack(
           alignment: Alignment.center,
           children: [
@@ -33,7 +33,6 @@ class DayTitle extends AbstractDayTitleWidget {
                 textAlign: TextAlign.center,
                 minFontSize: 4,
                 maxLines: 1,
-                // overflow: TextOverflow.ellipsis,
               ),
             ),
           ],

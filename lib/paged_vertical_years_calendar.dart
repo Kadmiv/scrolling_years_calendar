@@ -19,7 +19,7 @@ class PagedVerticalYearsCalendar extends StatefulWidget {
     DateFormat? monthFormatter,
     DateFormat? weekDayFormatter,
     this.onMonthTap,
-    this.showDayTitle = false,
+    this.showWeekDayTitle = false,
     this.startWeekWithSunday = false,
     DecorationWidgetBuilder? dayDecorationBuilder,
     TextStyleBuilder? dayStyleBuilder,
@@ -82,20 +82,34 @@ class PagedVerticalYearsCalendar extends StatefulWidget {
   /// scroll controller for making programmable scroll interactions
   final ScrollController? scrollController;
 
+  /// number of months that will be displayed in one list item
   final int monthsPerRow;
+
+  /// month title formatting
   final DateFormat monthFormatter;
+
+  /// week day title formatting
   final DateFormat weekDayFormatter;
 
-  final TextStyleBuilder yearTitleStyleBuilder;
+  /// year item background decoration builder
   final DecorationWidgetBuilder yearDecorationBuilder;
+  final TextStyleBuilder yearTitleStyleBuilder;
+
+  /// day item background decoration builder
   final DecorationWidgetBuilder dayDecorationBuilder;
   final TextStyleBuilder dayStyleBuilder;
+
+  final bool showWeekDayTitle;
+  final bool startWeekWithSunday;
+
+  /// week day item background decoration builder
   final DecorationWidgetBuilder dayTitleDecorationBuilder;
   final TextStyleBuilder dayTitleStyleBuilder;
-  final TextStyleBuilder monthTitleStyleBuilder;
+
+  /// month item background decoration builder
   final DecorationWidgetBuilder monthDecorationBuilder;
-  final bool showDayTitle;
-  final bool startWeekWithSunday;
+  final TextStyleBuilder monthTitleStyleBuilder;
+
 
   @override
   _PagedVerticalYearsCalendarState createState() =>
@@ -195,7 +209,7 @@ class _PagedVerticalYearsCalendarState
           monthTitles: _monthTitles,
           dayTitles: _dayTitles,
           onMonthTap: widget.onMonthTap,
-          showDayTitle: widget.showDayTitle,
+          showWeekDayTitle: widget.showWeekDayTitle,
           startWeekWithSunday: widget.startWeekWithSunday,
           dayDecorationBuilder: widget.dayDecorationBuilder,
           dayStyleBuilder: widget.dayStyleBuilder,

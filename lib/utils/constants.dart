@@ -16,7 +16,7 @@ typedef TextStyleBuilder = TextStyle Function(
 );
 
 final TextStyleBuilder defaultTextStyleBuilder = (context, date) {
-  return Theme.of(context).textTheme.bodyText1 ?? TextStyle();
+  return Theme.of(context).textTheme.bodyText1 ?? const TextStyle();
 };
 
 final defaultWeekDayFormatter = DateFormat('E');

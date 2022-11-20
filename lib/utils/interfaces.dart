@@ -33,7 +33,7 @@ abstract class AbstractMonthWidget extends StatelessWidget {
     required this.monthTitles,
     required this.monthTitleStyleBuilder,
     required this.monthDecorationBuilder,
-    required this.showDayTitle,
+    required this.showWeekDayTitle,
     required this.startWeekWithSunday,
     super.key,
   });
@@ -46,7 +46,7 @@ abstract class AbstractMonthWidget extends StatelessWidget {
   final List<String> monthTitles;
   final TextStyleBuilder monthTitleStyleBuilder;
   final DecorationWidgetBuilder monthDecorationBuilder;
-  final bool showDayTitle;
+  final bool showWeekDayTitle;
   final bool startWeekWithSunday;
 }
 
@@ -63,7 +63,7 @@ abstract class AbstractYearWidget extends AbstractMonthWidget {
     required super.monthTitles,
     required super.monthTitleStyleBuilder,
     required super.monthDecorationBuilder,
-    required super.showDayTitle,
+    required super.showWeekDayTitle,
     required super.startWeekWithSunday,
     super.key,
   });

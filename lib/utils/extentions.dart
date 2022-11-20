@@ -1,8 +1,4 @@
-import 'package:flutter/material.dart';
-
 extension DateUtilsExtensions on DateTime {
-  // int get daysInMonth => DateUtils.daysPerMonth(year)[month - 1];
-
   DateTime get nextDay => DateTime(year, month, day + 1);
 
   bool isSameDayOrAfter(DateTime other) => isAfter(other) || isSameDay(other);
@@ -17,6 +13,5 @@ extension DateUtilsExtensions on DateTime {
   bool isSameMonth(DateTime other) =>
       other.year == year && other.month == month;
 
-  bool isSameYear(DateTime other) =>
-      other.year == year ;
+  bool isSameYear(DateTime other) => other.year == year;
 }
