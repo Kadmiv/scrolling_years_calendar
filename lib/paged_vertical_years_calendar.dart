@@ -21,15 +21,14 @@ class PagedVerticalYearsCalendar extends StatefulWidget {
     this.onMonthTap,
     this.showDayTitle = false,
     this.startWeekWithSunday = false,
-    this.yearTitleBuilder,
-    TextStyleBuilder? yearTitleStyleBuilder,
-    DecorationWidgetBuilder? yearDecorationBuilder,
     DecorationWidgetBuilder? dayDecorationBuilder,
     TextStyleBuilder? dayStyleBuilder,
     DecorationWidgetBuilder? dayTitleDecorationBuilder,
     TextStyleBuilder? dayTitleStyleBuilder,
     TextStyleBuilder? monthTitleStyleBuilder,
     DecorationWidgetBuilder? monthDecorationBuilder,
+    TextStyleBuilder? yearTitleStyleBuilder,
+    DecorationWidgetBuilder? yearDecorationBuilder,
     super.key,
   })  : yearTitleStyleBuilder =
             yearTitleStyleBuilder ?? defaultTextStyleBuilder,
@@ -66,7 +65,6 @@ class PagedVerticalYearsCalendar extends StatefulWidget {
   final DateTime? maxDate;
 
   final Function(DateTime date)? onMonthTap;
-  final Function(BuildContext context, DateTime year)? yearTitleBuilder;
 
   /// if the calendar should stay cached when the widget is no longer loaded.
   /// this can be used for maintaining the last state. defaults to `false`
@@ -214,9 +212,10 @@ class _PagedVerticalYearsCalendarState
         children: [
           AspectRatio(
             aspectRatio: 10,
-            child: Align(
-              alignment: Alignment.centerLeft,
-              child: YearTitle(firstMonthDate),
+            child: YearTitle(
+              date: firstMonthDate,
+              yearDecorationBuilder: widget.yearDecorationBuilder,
+              yearTitleStyleBuilder: widget.yearTitleStyleBuilder,
             ),
           ),
           Row(children: months),

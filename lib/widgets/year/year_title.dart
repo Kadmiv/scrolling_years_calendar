@@ -1,26 +1,40 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
+import 'package:scrolling_years_calendar/utils/constants.dart';
 
 class YearTitle extends StatelessWidget {
-  const YearTitle(this.date, {super.key});
+  const YearTitle({
+    required this.date,
+    required this.yearTitleStyleBuilder,
+    required this.yearDecorationBuilder,
+    super.key,
+  });
 
   final DateTime date;
+  final TextStyleBuilder yearTitleStyleBuilder;
+  final DecorationWidgetBuilder yearDecorationBuilder;
 
   @override
   Widget build(BuildContext context) {
-    final style = TextStyle(fontSize: 20).copyWith(fontSize: 60);
+    final style = yearTitleStyleBuilder(context, date).copyWith(fontSize: 60);
 
-    return Container(
-      padding: const EdgeInsets.only(left: 16),
-      child: AutoSizeText(
-        date.year.toString(),
-        style: style,
-        // textAlign: TextAlign.center,
-        minFontSize: 10,
-        stepGranularity: 2,
-        maxLines: 1,
-        group: AutoSizeGroup(),
-      ),
+    return Stack(
+      alignment: Alignment.centerLeft,
+      children: [
+        yearDecorationBuilder(context, date) ?? const SizedBox(),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 1),
+          child: AutoSizeText(
+            date.year.toString(),
+            style: style,
+            // textAlign: TextAlign.center,
+            minFontSize: 10,
+            stepGranularity: 2,
+            maxLines: 1,
+            group: AutoSizeGroup(),
+          ),
+        ),
+      ],
     );
   }
 }

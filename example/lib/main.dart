@@ -59,7 +59,7 @@ class HomePage extends StatelessWidget {
           return TextStyle();
         },
         dayTitleDecorationBuilder: (context, date) {
-          if (date.weekday==6||date.weekday==7) {
+          if (date.weekday == 6 || date.weekday == 7) {
             return Container(
               decoration: BoxDecoration(
                 color: Color.fromRGBO(255, 132, 132, 0.8),
@@ -70,7 +70,7 @@ class HomePage extends StatelessWidget {
           return null;
         },
         dayTitleStyleBuilder: (context, date) {
-          if (date.weekday==6||date.weekday==7) {
+          if (date.weekday == 6 || date.weekday == 7) {
             return TextStyle(color: Colors.white);
           }
 
@@ -123,8 +123,27 @@ class HomePage extends StatelessWidget {
           return null;
         },
         monthTitleStyleBuilder: (context, date) {
-          if ((date.month >= 1 && date.month < 3 ) ||
+          if ((date.month >= 1 && date.month < 3) ||
               (date.month >= 9 && date.month <= 12)) {
+            return TextStyle(color: Colors.white);
+          }
+
+          return TextStyle();
+        },
+
+        yearDecorationBuilder: (context, date) {
+          if (date.year == 2022) {
+            return Container(
+              decoration: BoxDecoration(
+                color: Color.fromRGBO(255, 132, 132, 0.8),
+              ),
+            );
+          }
+
+          return null;
+        },
+        yearTitleStyleBuilder: (context, date) {
+          if (date.year == 2022) {
             return TextStyle(color: Colors.white);
           }
 
