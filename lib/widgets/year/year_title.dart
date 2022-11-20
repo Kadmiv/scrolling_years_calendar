@@ -8,10 +8,13 @@ class YearTitle extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final style = TextStyle(fontSize: 20).copyWith(fontSize: 60);
+
     return Container(
+      padding: const EdgeInsets.only(left: 16),
       child: AutoSizeText(
         date.year.toString(),
-        style: TextStyle(fontSize: 60),
+        style: style,
         // textAlign: TextAlign.center,
         minFontSize: 10,
         stepGranularity: 2,
