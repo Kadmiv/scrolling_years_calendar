@@ -2,8 +2,8 @@ name: scrolling_years_calendar_example
 description: Demonstrates how to use the scrolling_years_calendar plugin.
 
 environment:
-  sdk: ">=2.17.0 <3.0.0"
-  flutter: ">=3.0.0 <4.0.0"
+  sdk: '>=3.0.0 <4.0.0'
+  flutter: ">=3.10.0"
 
 dependencies:
   flutter:
